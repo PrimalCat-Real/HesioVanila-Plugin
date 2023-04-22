@@ -1,0 +1,9 @@
+name: HesioVanila
+version: '${project.version}'
+main: primalcat.hesiovanila.HesioVanila
+api-version: 1.19
+
+commands:
+  login:
+    description: "authorize player on server"
+    usage: /login <password>

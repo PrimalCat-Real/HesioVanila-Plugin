@@ -1,0 +1,4 @@
+primalcat\hesiovanila\manager\AccountManager.class
+primalcat\hesiovanila\HesioVanila.class
+primalcat\hesiovanila\events\onPlayerJoin.class
+primalcat\hesiovanila\commands\Login.class
