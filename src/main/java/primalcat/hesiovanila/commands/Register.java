@@ -5,6 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import primalcat.hesiovanila.HesioVanila;
 import primalcat.hesiovanila.manager.AccountManager;
+import primalcat.hesiovanila.manager.AuthenticationManager;
 
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
@@ -34,7 +35,7 @@ public class Register implements CommandExecutor {
         }
 
         AccountManager accountManager = HesioVanila.getAccountManager();
-
+        AuthenticationManager authenticationManager = HesioVanila.getAuthenticationManager();
         try {
             // Check if player already exists
             if (accountManager.searchPlayerByName(playerName)) {
@@ -46,6 +47,7 @@ public class Register implements CommandExecutor {
             accountManager.registerUser(playerName, password);
 
             commandSender.sendMessage("Account created successfully.");
+            authenticationManager.addAuthenticatedPlayer(playerName);
             return true;
         } catch (SQLException e) {
             commandSender.sendMessage("An error occurred while registering the account.");

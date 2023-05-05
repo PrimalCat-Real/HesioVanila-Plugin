@@ -41,60 +41,38 @@ public class onPlayerJoin implements Listener {
         AccountManager accountManager = HesioVanila.getAccountManager();
 
         Connection connection = HesioVanila.getConnection();
-//        try {
-//            ResourceBundle messages = ResourceBundle.getBundle("locales.messages", Locale.of("ua_UK"));
-//            System.out.println(messages.getString("welcome_message"));
-//        }catch (Exception e){
-//            System.out.println(e.getMessage());
-//        }
 
         if (accountManager.searchPlayerByName(player.getName())){
             System.out.println("player exist");
+            player.sendMessage("/login");
         }else {
 //            String welcomeMessage = messages.getString("welcome_message");
             player.sendMessage("/register");
             System.out.println("new player");
         }
-        // Try to load the appropriate localization file based on the player's locale
-//        InputStream inputStream = getResource("lang/messages_" + playerLocale.toLanguageTag() + ".properties").openStream();
-//        if (inputStream == null) {
-//            // If the appropriate file can't be found, use the default file
-//            inputStream = getResource("lang/messages.properties").openStream();
-//        }
-//
-//        // Load the localization file
-//        Properties messages = new Properties();
-//        try {
-//            messages.load(inputStream);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return;
-//        }
-
-        // Retrieve the localized welcome message and send it to the player
         String welcomeMessage = "Welcome Message";
 
         player.sendMessage(ChatColor.GREEN + welcomeMessage);
 
         // Disable player movement and actions for 5 seconds
-        player.setWalkSpeed(0F);
-        player.setFlySpeed(0F);
-        player.setAllowFlight(false);
-        player.setFlying(false);
-        player.setGameMode(GameMode.ADVENTURE);
+//        player.setWalkSpeed(0.2F);
+//        player.setFlySpeed(0.1F);
+//        player.setAllowFlight(false);
+//        player.setFlying(false);
+//        player.setGameMode(GameMode.ADVENTURE);
 
 
         // Prevent mobs from targeting the player when they join
-        for (Entity entity : player.getNearbyEntities(32, 32, 32)) {
-            if (entity instanceof Mob) {
-                Mob mob = (Mob) entity;
-                EntityTargetEvent targetEvent = new EntityTargetEvent(mob, player, EntityTargetEvent.TargetReason.CUSTOM);
-                Bukkit.getPluginManager().callEvent(targetEvent);
-                if (!targetEvent.isCancelled()) {
-                    mob.setTarget(player);
-                }
-            }
-        }
+//        for (Entity entity : player.getNearbyEntities(32, 32, 32)) {
+//            if (entity instanceof Mob) {
+//                Mob mob = (Mob) entity;
+//                EntityTargetEvent targetEvent = new EntityTargetEvent(mob, player, EntityTargetEvent.TargetReason.CUSTOM);
+//                Bukkit.getPluginManager().callEvent(targetEvent);
+//                if (!targetEvent.isCancelled()) {
+//                    mob.setTarget(player);
+//                }
+//            }
+//        }
 
         // Log a message to the server console
         getLogger().info(player.getName() + " has joined the server!");
@@ -115,13 +93,13 @@ public class onPlayerJoin implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onBlockPlace(BlockPlaceEvent e) {
         String name = e.getPlayer().getName();
-        e.setCancelled(true);
+        if (!HesioVanila.getAuthenticationManager().isPlayerAuthenticated(name)) e.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onBlockBreak(BlockBreakEvent e) {
         String name = e.getPlayer().getName();
-        e.setCancelled(true);
+        if (!HesioVanila.getAuthenticationManager().isPlayerAuthenticated(name)) e.setCancelled(true);
     }
 
 
