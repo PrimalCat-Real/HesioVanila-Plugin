@@ -1,4 +1,10 @@
-primalcat\hesiovanila\manager\AccountManager.class
+primalcat\hesiovanila\commands\SearchPlayer.class
 primalcat\hesiovanila\HesioVanila.class
-primalcat\hesiovanila\events\onPlayerJoin.class
+primalcat\hesiovanila\commands\DeleteAccount.class
 primalcat\hesiovanila\commands\Login.class
+primalcat\hesiovanila\settings\ConfigManager.class
+primalcat\hesiovanila\manager\AccountManager.class
+primalcat\hesiovanila\models\Account.class
+primalcat\hesiovanila\commands\Register.class
+primalcat\hesiovanila\events\onPlayerJoin.class
+primalcat\hesiovanila\manager\AuthenticationManager.class

@@ -7,3 +7,15 @@ commands:
   login:
     description: "authorize player on server"
     usage: /login <password>
+
+  register:
+    description: "authorize player on server"
+    usage: /register <password> <password>
+
+  searchPlayerInDB:
+    description: "search if player exist in auth db"
+    usage: /search <player>
+
+  deletePlayerInDB:
+    description: "remove player from db"
+    usage: /deleteAccount <player>
