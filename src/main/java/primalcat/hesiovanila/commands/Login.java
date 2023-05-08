@@ -1,5 +1,6 @@
 package primalcat.hesiovanila.commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -38,11 +39,14 @@ public class Login implements CommandExecutor {
         try {
             Optional<Account> optionalAccount = accountManager.loginUser(username, password);
             if (optionalAccount.isPresent()) {
-                sender.sendMessage(ChatColor.GREEN + "You have successfully logged in.");
+                Player player = Bukkit.getPlayer(username);
+                player.sendTitle("§l§aWelcome back!", "§qYou have logged in successfully.", 20, 10, 20);
+//                sender.sendMessage(ChatColor.GREEN + "You have successfully logged in.");
                 authenticationManager.addAuthenticatedPlayer(username);
                 // Add any other logic you want to happen after a successful login
             } else {
-                sender.sendMessage(ChatColor.RED + "Incorrect username or password.");
+                Player player = Bukkit.getPlayer(username);
+                player.sendTitle("§l§cWrong password", "§qPlease try again", 20, 10, 20);
             }
         } catch (SQLException | NoSuchAlgorithmException e) {
             e.printStackTrace();

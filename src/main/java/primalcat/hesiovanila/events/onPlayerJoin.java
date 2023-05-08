@@ -1,9 +1,7 @@
 package primalcat.hesiovanila.events;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
+import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
@@ -20,6 +18,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import primalcat.hesiovanila.HesioVanila;
+import primalcat.hesiovanila.Utilities;
 import primalcat.hesiovanila.manager.AccountManager;
 import primalcat.hesiovanila.manager.AuthenticationManager;
 
@@ -38,57 +37,64 @@ public class onPlayerJoin implements Listener {
         // Get the player who just joined
         Player player = event.getPlayer();
 
+        // Get the account manager, utilities, connection, and player name
         AccountManager accountManager = HesioVanila.getAccountManager();
-
+        Utilities utilities = new Utilities();
         Connection connection = HesioVanila.getConnection();
+        String name = player.getName();
 
-        if (accountManager.searchPlayerByName(player.getName())){
-            System.out.println("player exist");
-            player.sendMessage("/login");
-        }else {
-//            String welcomeMessage = messages.getString("welcome_message");
-            player.sendMessage("/register");
-            System.out.println("new player");
+        // Check if the player is inside a Nether portal
+        Block block = player.getLocation().getBlock();
+        getLogger().info(name + " is join inside nether portal");
+        // Save from portal trap
+        // Teleport player to nearest safe location
+        World world = player.getWorld();
+        Location location = player.getLocation();
+        if (block.getType() == Material.NETHER_PORTAL) {
+            Location safeLocation = utilities.findSafeLocation(world, location.getBlockX(), location.getBlockY(), location.getBlockZ(), 8);
+            if (safeLocation != null) {
+                player.teleport(safeLocation);
+            } else {
+                location.getBlock().breakNaturally();
+            }
         }
-        String welcomeMessage = "Welcome Message";
 
-        player.sendMessage(ChatColor.GREEN + welcomeMessage);
-
-        // Disable player movement and actions for 5 seconds
-//        player.setWalkSpeed(0.2F);
-//        player.setFlySpeed(0.1F);
-//        player.setAllowFlight(false);
-//        player.setFlying(false);
-//        player.setGameMode(GameMode.ADVENTURE);
-
-
-        // Prevent mobs from targeting the player when they join
-//        for (Entity entity : player.getNearbyEntities(32, 32, 32)) {
-//            if (entity instanceof Mob) {
-//                Mob mob = (Mob) entity;
-//                EntityTargetEvent targetEvent = new EntityTargetEvent(mob, player, EntityTargetEvent.TargetReason.CUSTOM);
-//                Bukkit.getPluginManager().callEvent(targetEvent);
-//                if (!targetEvent.isCancelled()) {
-//                    mob.setTarget(player);
-//                }
-//            }
-//        }
+        // TODO: Load welcome message from configuration file
+        // Check if the player has an account
+        if (accountManager.searchPlayerByName(name)) {
+            // If the player has an account, send a login prompt
+            player.sendTitle("§l§qPlease Login", "§7/login §8<password>", 20, 10, 1728000);
+            player.sendMessage("/login");
+        } else {
+            // If the player does not have an account, send a registration prompt
+            player.sendTitle("§l§qPlease register", "§7/register §8<password> <password>", 20, 10, 1728000);
+            player.sendMessage("/register");
+        }
 
         // Log a message to the server console
         getLogger().info(player.getName() + " has joined the server!");
     }
 
-//    @EventHandler
-//    public void onBlockBreak(BlockBreakEvent event) {
-//        // Check if the player is trying to break a block
-//        if (event.getPlayer() != null) {
-//            Player player = event.getPlayer();
-//
-//            // Cancel the event to prevent the player from breaking blocks
-//            event.setCancelled(true);
-//
-//        }
-//    }
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onPlayerChat(AsyncPlayerChatEvent event) {
+        String name = event.getPlayer().getName();
+        if (!HesioVanila.getAuthenticationManager().isPlayerAuthenticated(name)) {
+            event.setCancelled(true);
+            // Optionally, you can send a message to the player to let them know they can't chat
+            event.getPlayer().sendMessage("You cannot send messages until you are authenticated.");
+        }
+    }
+
+    @EventHandler
+    public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
+        String command = event.getMessage();
+        if (!HesioVanila.getAuthenticationManager().isPlayerAuthenticated(event.getPlayer().getName())) {
+            if (!command.startsWith("/register") && !command.startsWith("/login")) {
+                event.setCancelled(true);
+                event.getPlayer().sendMessage("You must be authenticated to use commands.");
+            }
+        }
+    }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onBlockPlace(BlockPlaceEvent e) {

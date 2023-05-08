@@ -1,8 +1,10 @@
 package primalcat.hesiovanila.commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import primalcat.hesiovanila.HesioVanila;
 import primalcat.hesiovanila.manager.AccountManager;
 import primalcat.hesiovanila.manager.AuthenticationManager;
@@ -45,8 +47,9 @@ public class Register implements CommandExecutor {
 
             // Create new account
             accountManager.registerUser(playerName, password);
-
-            commandSender.sendMessage("Account created successfully.");
+            Player player = Bukkit.getPlayer(playerName);
+            player.sendTitle("§l§aSuccessfully registered.", "§qWelcome to the server!", 20, 10, 20);
+//            commandSender.sendMessage("Account created successfully.");
             authenticationManager.addAuthenticatedPlayer(playerName);
             return true;
         } catch (SQLException e) {
